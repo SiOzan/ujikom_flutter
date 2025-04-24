@@ -1,18 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ujikom_flutter/app/controllers/form_contorller.dart';
 
-class FormView extends GetView {
+class FormView extends GetView<FormController> {
   const FormView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final _formKey = GlobalKey<FormState>();
+    // Inject controller hanya jika belum ada
+    final formController = Get.put(FormController());
 
-    // Controllers for the input fields
+    // TextEditingControllers
     final TextEditingController namaController = TextEditingController();
     final TextEditingController emailController = TextEditingController();
     final TextEditingController judulController = TextEditingController();
     final TextEditingController deskripsiController = TextEditingController();
+
+    // Global form key
+    final _formKey = GlobalKey<FormState>();
 
     return Scaffold(
       appBar: AppBar(
@@ -37,6 +42,7 @@ class FormView extends GetView {
                 ),
               ),
               const SizedBox(height: 16.0),
+
               // Nama Field
               TextFormField(
                 controller: namaController,
@@ -55,6 +61,7 @@ class FormView extends GetView {
                 },
               ),
               const SizedBox(height: 16.0),
+
               // Email Field
               TextFormField(
                 controller: emailController,
@@ -76,6 +83,7 @@ class FormView extends GetView {
                 },
               ),
               const SizedBox(height: 16.0),
+
               // Judul Field
               TextFormField(
                 controller: judulController,
@@ -94,6 +102,7 @@ class FormView extends GetView {
                 },
               ),
               const SizedBox(height: 16.0),
+
               // Deskripsi Field
               TextFormField(
                 controller: deskripsiController,
@@ -113,34 +122,40 @@ class FormView extends GetView {
                 },
               ),
               const SizedBox(height: 24.0),
+
               // Submit Button
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      // Proses data form di sini
-                      Get.snackbar(
-                        'Berhasil',
-                        'Saran berhasil disimpan',
-                        snackPosition: SnackPosition.BOTTOM,
-                        backgroundColor: Colors.greenAccent,
-                        colorText: Colors.white,
-                      );
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.0),
+              Obx(() => SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: formController.isSubmitting.value
+                          ? null
+                          : () {
+                              if (_formKey.currentState!.validate()) {
+                                formController.submitSaran(
+                                  nama: namaController.text,
+                                  email: emailController.text,
+                                  judul: judulController.text,
+                                  deskripsi: deskripsiController.text,
+                                );
+                              }
+                            },
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                        ),
+                      ),
+                      child: formController.isSubmitting.value
+                          ? const CircularProgressIndicator(
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.white),
+                            )
+                          : const Text(
+                              'Kirim',
+                              style: TextStyle(fontSize: 16),
+                            ),
                     ),
-                  ),
-                  child: const Text(
-                    'Kirim',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ),
-              ),
+                  )),
             ],
           ),
         ),

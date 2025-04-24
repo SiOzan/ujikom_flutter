@@ -5,6 +5,7 @@ class BaseUrl {
   static String logout = '/api/logout';
 
   static String saran = '/api/saran';
+  static String saranStore = '/api/saran/';
   static String profile = '/api/user';
   // static String storeSarans = 'http://127.0.0.1:8000/api/saran/';
 }
